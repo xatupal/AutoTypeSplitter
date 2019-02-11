@@ -1,0 +1,2 @@
+# AutoTypeSplitter
+KeePass Plugin
