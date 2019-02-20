@@ -1,27 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Drawing;
+﻿using System.Drawing;
 using AutoTypeSplitter.Properties;
 using KeePass.Plugins;
 using KeePass.Util;
 using KeePass.Util.Spr;
-using KeePassLib;
 
 namespace AutoTypeSplitter
 {
 	public sealed class AutoTypeSplitterExt : Plugin
 	{
-		private const string Placeholder = "{SPLIT}";
-
-		private int _sequenceIndex = -1;
-		private string[] _sequenceParts;
+		private SequenceVisitor _sequenceVisitor;
 
 		public override bool Initialize(IPluginHost host)
 		{
 			if (host == null)
 				return false;
 
-			SprEngine.FilterPlaceholderHints.Add(Placeholder);
+			_sequenceVisitor = new SequenceVisitor(host);
+
+			SprEngine.FilterPlaceholderHints.Add(SequencePart.Placeholder);
 			AutoType.FilterCompilePre += HandleAutoTypeFilterCompilePre;
 
 			return true;
@@ -30,34 +26,12 @@ namespace AutoTypeSplitter
 		public override void Terminate()
 		{
 			AutoType.FilterCompilePre -= HandleAutoTypeFilterCompilePre;
-			SprEngine.FilterPlaceholderHints.Remove(Placeholder);
+			SprEngine.FilterPlaceholderHints.Remove(SequencePart.Placeholder);
 		}
 
 		private void HandleAutoTypeFilterCompilePre(object sender, AutoTypeEventArgs e)
 		{
-			if (_sequenceParts == null)
-			{
-				var newSequenceParts = e.Sequence.Split(new[] { Placeholder }, StringSplitOptions.RemoveEmptyEntries);
-				if (newSequenceParts.Length == 1)
-					return;
-
-				_sequenceParts = newSequenceParts;
-				_sequenceIndex = _sequenceParts.Length;
-				e.Sequence = _sequenceParts[--_sequenceIndex];
-				AutoType.PerformGlobal(new List<PwDatabase> { e.Database }, null);
-			}
-			else
-			{
-				e.Sequence = _sequenceParts[--_sequenceIndex];
-				if (_sequenceIndex == 0)
-				{
-					_sequenceParts = null;
-				}
-				else
-				{
-					AutoType.PerformGlobal(new List<PwDatabase> { e.Database }, null);
-				}
-			}
+			_sequenceVisitor.Visit(sender, e);
 		}
 
 		public override string UpdateUrl
