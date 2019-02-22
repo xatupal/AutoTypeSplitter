@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 using KeePass.Plugins;
 using KeePass.Util;
-using KeePassLib;
 
 namespace AutoTypeSplitter
 {
@@ -10,8 +8,6 @@ namespace AutoTypeSplitter
 	{
 		private readonly IPluginHost _host;
 
-		private bool _isCanceled;
-		private int _sequenceIndex = -1;
 		private SequencePart[] _sequenceParts;
 
 		public SequenceVisitor(IPluginHost host)
@@ -21,37 +17,35 @@ namespace AutoTypeSplitter
 
 		public void Visit(object sender, AutoTypeEventArgs e)
 		{
-			if (_sequenceParts == null)
-			{
-				_isCanceled = false;
+			if (_sequenceParts != null)
+				return;
 
-				var newSequenceParts = SequencePart.Create(e.Sequence);
-				if (newSequenceParts.Length == 1)
-					return;
-
-				_sequenceParts = newSequenceParts;
-				_sequenceIndex = _sequenceParts.Length;
-			}
-
-			var sequencePart = _sequenceParts[--_sequenceIndex];
-			e.Sequence = sequencePart.Sequence;
-			if (_sequenceIndex == 0)
+			_sequenceParts = SequencePart.Create(e.Sequence);
+			if (_sequenceParts.Length == 1)
 			{
 				_sequenceParts = null;
+				return;
 			}
-			else
+
+			foreach (var sequencePart in _sequenceParts)
 			{
-				AutoType.PerformGlobal(new List<PwDatabase> {e.Database}, _host.MainWindow.ClientIcons);
-				if (sequencePart.Message != null && !_isCanceled)
+				if (sequencePart.Message != null)
 				{
-					var dialogResult = MessageBox.Show(sequencePart.Message, _host.MainWindow.Text, MessageBoxButtons.OKCancel);
+					var dialogResult = MessageBox.Show(sequencePart.Message, _host.MainWindow.Text, 
+						MessageBoxButtons.OKCancel, MessageBoxIcon.None, MessageBoxDefaultButton.Button1, 
+						MessageBoxOptions.DefaultDesktopOnly);
+
 					if (dialogResult == DialogResult.Cancel)
-						_isCanceled = true;
+						break;
 				}
 
-				if (_isCanceled)
-					e.Sequence = string.Empty;
+				var success = AutoType.PerformIntoCurrentWindow(e.Entry, e.Database, sequencePart.Sequence);
+				if (!success)
+					break;
 			}
+
+			_sequenceParts = null;
+			e.Sequence = string.Empty;
 		}
 	}
 }
