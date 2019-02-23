@@ -3,7 +3,7 @@ KeePass Plugin
 
 Splits auto-typing into distinct parts.
 
-It is useful when the login screen consists of multiple parts and it is not known in advance when or what characters will be needed.
+It is useful when the login screen consists of multiple parts and it is not known in advance when or what characters will be needed. Also, the plugin can be used as a delay method until the next page of a multipage login loads and when a particular entry is to be enterd in multiple places with varying arrangements/designs of input fields.
 
 Example usages:
 * `{USERNAME}{ENTER}{SPLIT}{PICKCHARS}{ENTER}` - KeePass will print the username and **then** will show the pickchars window.
