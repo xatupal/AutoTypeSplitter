@@ -13,6 +13,7 @@ Example usages:
 * Multiple usages of `{SPLIT}` within a sequence is allowed e.g.:
   * `{USERNAME}{ENTER}{SPLIT}{PICKFIELD}{ENTER}{SPLIT:Custom message}{S:CustomField}{ENTER}`
 
-The plugin is compatible with [TCATO](https://keepass.info/help/v2/autotype_obfuscation.html).
+The plugin is compatible with [TCATO](https://keepass.info/help/v2/autotype_obfuscation.html) and can extend the functionality of  [TCATO Placeholder](https://keepass.info/plugins.html#tcatoplh) plugin, e.g.:
+* `{TCATO:false}{USERNAME}{TAB}{SPLIT}{TCATO:true}{PASSWORD}` - KeePass will enable TCATO for the password only.
   
 Whereas, if all you need is just to postpone `{PICKCHARS}` window then it's easier to use [PickCharsDeffered](https://github.com/xatupal/PickCharsDeferred) plugin which does not require any changes in the sequences.
