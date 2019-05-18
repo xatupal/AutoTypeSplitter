@@ -17,3 +17,11 @@ The plugin is compatible with [TCATO](https://keepass.info/help/v2/autotype_obfu
 * `{TCATO:false}{USERNAME}{TAB}{SPLIT}{TCATO:true}{PASSWORD}` - KeePass will enable TCATO for the password only.
   
 Whereas, if all you need is just to postpone `{PICKCHARS}` window then it's easier to use [PickCharsDeffered](https://github.com/xatupal/PickCharsDeferred) plugin which does not require any changes in the sequences.
+
+### Installation
+
+Copy ![AutoTypeSplitter.dll](https://github.com/xatupal/AutoTypeSplitter/releases/latest/download/AutoTypeSplitter.dll) or ![AutoTypeSplitter.plgx](https://github.com/xatupal/AutoTypeSplitter/releases/latest/download/AutoTypeSplitter.plgx) to the KeePass Plugins directory or install via ![Chocolatey](https://chocolatey.org):
+
+```
+choco install keepass-plugin-autotypesplitter
+```
